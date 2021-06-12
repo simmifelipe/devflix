@@ -1,25 +1,355 @@
+import React, { useRef } from 'react';
+import {
+  SafeAreaView,
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  StyleSheet,
+  ScrollView,
+  ImageBackground,
+  TouchableWithoutFeedback,
+  Animated,
+  FlatList,
+} from 'react-native';
+
 import { useNavigation } from '@react-navigation/native';
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Profiles } from '../../components';
+
+import {
+  dummyData,
+  COLORS,
+  SIZES,
+  FONTS,
+  icons,
+  images,
+} from '../../constants';
 
 const Home = () => {
   const { navigate } = useNavigation();
 
+  const newSeasonScrollX = useRef(new Animated.Value(0)).current;
+
+  function renderHeader() {
+    return (
+      <View style={styles.header}>
+        {/* Perfil */}
+        <TouchableOpacity
+          style={styles.profile}
+          onPress={() => console.log('Profile')}>
+          <Image source={images.profile_photo} style={styles.profileImage} />
+        </TouchableOpacity>
+
+        {/* Screen Mirror */}
+        <TouchableOpacity
+          style={styles.screenMirror}
+          onPress={() => console.log('Screen mirror')}>
+          <Image source={icons.airplay} style={styles.screenMirrorImage} />
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  function renderNewSeasonSection() {
+    return (
+      <Animated.FlatList
+        horizontal
+        pagingEnabled
+        snapToAlignment="center"
+        snapToInterval={SIZES.width}
+        showsHorizontalScrollIndicator={false}
+        scrollEventThrottle={16}
+        decelerationRate={0}
+        contentContainerStyle={{
+          marginTop: SIZES.radius,
+        }}
+        data={dummyData.newSeason}
+        keyExtractor={item => `${item.id}`}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { x: newSeasonScrollX } } }],
+          { useNativeDriver: false },
+        )}
+        renderItem={({ item }) => {
+          return (
+            <TouchableWithoutFeedback
+              onPress={() => navigate('MovieDetails', { selectedMovie: item })}>
+              <View style={styles.newSeason}>
+                {/* Thumbnail */}
+                <ImageBackground
+                  source={item.thumbnail}
+                  resizeMode="cover"
+                  style={styles.newSeasonBackgroundImage}
+                  imageStyle={styles.backgroundImageStyle}>
+                  <View style={styles.screenActions}>
+                    {/* Play now */}
+                    <View style={styles.play}>
+                      <View style={styles.playAction}>
+                        <Image
+                          source={icons.play}
+                          resizeMode="contain"
+                          style={styles.playIcon}
+                        />
+                      </View>
+                      <Text
+                        style={{
+                          marginLeft: SIZES.base,
+                          color: COLORS.white,
+                          ...FONTS.h3,
+                        }}>
+                        Play Now
+                      </Text>
+                    </View>
+
+                    {/* Still Watching */}
+                    {item.stillWatching.length > 0 && (
+                      <View style={styles.stillWatching}>
+                        <Text
+                          style={{
+                            color: COLORS.white,
+                            ...FONTS.h4,
+                          }}>
+                          Still Watching
+                        </Text>
+
+                        <Profiles profiles={item.stillWatching} />
+                      </View>
+                    )}
+                  </View>
+                </ImageBackground>
+              </View>
+            </TouchableWithoutFeedback>
+          );
+        }}
+      />
+    );
+  }
+
+  function renderDots() {
+    const dotPosition = Animated.divide(newSeasonScrollX, SIZES.width);
+
+    return (
+      <View style={styles.dots}>
+        {dummyData.newSeason.map((item, index) => {
+          const opacity = dotPosition.interpolate({
+            inputRange: [index - 1, index, index + 1],
+            outputRange: [0.3, 1, 0.3],
+            extrapolate: 'clamp',
+          });
+
+          const dotWidth = dotPosition.interpolate({
+            inputRange: [index - 1, index, index + 1],
+            outputRange: [6, 20, 6],
+            extrapolate: 'clamp',
+          });
+
+          const dotColor = dotPosition.interpolate({
+            inputRange: [index - 1, index, index + 1],
+            outputRange: [COLORS.lightGray, COLORS.primary, COLORS.lightGray],
+            extrapolate: 'clamp',
+          });
+
+          return (
+            <Animated.View
+              key={`dot-${index}`}
+              style={[
+                styles.dot,
+                {
+                  width: dotWidth,
+                  backgroundColor: dotColor,
+                  opacity: opacity,
+                },
+              ]}
+            />
+          );
+        })}
+      </View>
+    );
+  }
+
+  function renderContinueWatchingSection() {
+    return (
+      <View
+        style={{
+          marginTop: SIZES.padding,
+        }}>
+        {/* Header */}
+        <View style={styles.headerWatchingSection}>
+          <Text style={styles.headerText}>Continue Watching</Text>
+
+          <Image source={icons.right_arrow} style={styles.headerRightAction} />
+        </View>
+
+        {/* List */}
+        <FlatList
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{
+            marginTop: SIZES.padding,
+          }}
+          data={dummyData.continueWatching}
+          keyExtractor={item => `${item.id}`}
+          renderItem={({ item, index }) => {
+            return (
+              <TouchableWithoutFeedback
+                onPress={() =>
+                  navigate('MovieDetail', { selectedMovie: item })
+                }>
+                <View
+                  style={{
+                    marginLeft: index === 0 ? SIZES.padding : 20,
+                    marginRight:
+                      index === dummyData.continueWatching.length - 1
+                        ? SIZES.padding
+                        : 0,
+                  }}>
+                  {/* Thumbnail */}
+                  <Image
+                    source={item.thumbnail}
+                    resizeMode="cover"
+                    style={styles.thumbnailImage}
+                  />
+
+                  {/* Name */}
+                  <Text
+                    style={{
+                      marginTop: SIZES.base,
+                      color: COLORS.white,
+                      ...FONTS.h4,
+                    }}>
+                    {item.name}
+                  </Text>
+
+                  {/* Progress Bar */}
+                </View>
+              </TouchableWithoutFeedback>
+            );
+          }}
+        />
+      </View>
+    );
+  }
+
   return (
-    <View style={styles.container}>
-      <Text>Home</Text>
-      <TouchableOpacity onPress={() => navigate('MovieDetail')}>
-        <Text>Navigate to MovieDetail</Text>
-      </TouchableOpacity>
-    </View>
+    <SafeAreaView style={styles.container}>
+      {renderHeader()}
+
+      <ScrollView contentContainerStyle={styles.scrollview}>
+        {renderNewSeasonSection()}
+        {renderDots()}
+        {renderContinueWatchingSection()}
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: COLORS.black,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: SIZES.padding,
+  },
+  profile: {
     alignItems: 'center',
     justifyContent: 'center',
+    width: 50,
+    height: 50,
+  },
+  profileImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+  },
+  screenMirror: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 50,
+    height: 50,
+  },
+  screenMirrorImage: {
+    width: 25,
+    height: 25,
+    tintColor: COLORS.primary,
+  },
+  scrollview: {
+    paddingBottom: 100,
+  },
+  newSeason: {
+    width: SIZES.width,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  newSeasonBackgroundImage: {
+    width: SIZES.width * 0.85,
+    height: SIZES.width * 0.85,
+    justifyContent: 'flex-end',
+  },
+  backgroundImageStyle: {
+    borderRadius: 40,
+  },
+  screenActions: {
+    flexDirection: 'row',
+    height: 60,
+    width: '100%',
+    marginBottom: SIZES.radius,
+    paddingHorizontal: SIZES.radius,
+  },
+  play: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  playAction: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: COLORS.transparentWhite,
+  },
+  playIcon: {
+    width: 15,
+    height: 15,
+    tintColor: COLORS.white,
+  },
+  stillWatching: {
+    justifyContent: 'center',
+  },
+  dots: {
+    marginTop: SIZES.padding,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  dot: {
+    borderRadius: SIZES.radius,
+    marginHorizontal: 3,
+
+    height: 6,
+  },
+  headerWatchingSection: {
+    flexDirection: 'row',
+    paddingHorizontal: SIZES.padding,
+    alignItems: 'center',
+  },
+  headerText: {
+    flex: 1,
+    color: COLORS.white,
+    ...FONTS.h2,
+  },
+  headerRightAction: {
+    width: 20,
+    height: 20,
+    tintColor: COLORS.primary,
+  },
+  thumbnailImage: {
+    width: SIZES.width / 3,
+    height: SIZES.width / 3 + 40,
+    borderRadius: 20,
   },
 });
 
