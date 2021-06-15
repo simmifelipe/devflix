@@ -11,10 +11,11 @@ import {
   TouchableWithoutFeedback,
   Animated,
   FlatList,
+  StatusBar,
 } from 'react-native';
 
 import { useNavigation } from '@react-navigation/native';
-import { Profiles } from '../../components';
+import { Profiles, ProgressBar } from '../../components';
 
 import {
   dummyData,
@@ -72,7 +73,7 @@ const Home = () => {
         renderItem={({ item }) => {
           return (
             <TouchableWithoutFeedback
-              onPress={() => navigate('MovieDetails', { selectedMovie: item })}>
+              onPress={() => navigate('MovieDetail', { selectedMovie: item })}>
               <View style={styles.newSeason}>
                 {/* Thumbnail */}
                 <ImageBackground
@@ -195,6 +196,7 @@ const Home = () => {
                   navigate('MovieDetail', { selectedMovie: item })
                 }>
                 <View
+                  // eslint-disable-next-line react-native/no-inline-styles
                   style={{
                     marginLeft: index === 0 ? SIZES.padding : 20,
                     marginRight:
@@ -220,6 +222,13 @@ const Home = () => {
                   </Text>
 
                   {/* Progress Bar */}
+                  <ProgressBar
+                    containerStyle={{
+                      marginTop: SIZES.radius,
+                    }}
+                    barStyle={styles.barStyle}
+                    barPercentage={item.overallProgress}
+                  />
                 </View>
               </TouchableWithoutFeedback>
             );
@@ -232,7 +241,6 @@ const Home = () => {
   return (
     <SafeAreaView style={styles.container}>
       {renderHeader()}
-
       <ScrollView contentContainerStyle={styles.scrollview}>
         {renderNewSeasonSection()}
         {renderDots()}
@@ -245,6 +253,7 @@ const Home = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: StatusBar.currentHeight,
     backgroundColor: COLORS.black,
   },
   header: {
@@ -252,6 +261,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: SIZES.padding,
+    marginTop: 10,
   },
   profile: {
     alignItems: 'center',
@@ -350,6 +360,9 @@ const styles = StyleSheet.create({
     width: SIZES.width / 3,
     height: SIZES.width / 3 + 40,
     borderRadius: 20,
+  },
+  barStyle: {
+    height: 3,
   },
 });
 

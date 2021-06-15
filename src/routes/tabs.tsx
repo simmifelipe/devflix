@@ -2,7 +2,6 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import Home from '../screens/Home';
-import MovieDetail from '../screens/MovieDetail';
 
 import { TabIcon } from '../components';
 import { COLORS, icons } from '../constants';

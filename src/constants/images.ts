@@ -1,4 +1,4 @@
-import profile_photo from '../assets/images/dummy_profile/profile_photo.png';
+import profile_photo from '../assets/images/logo.png';
 
 export default {
   profile_photo,
