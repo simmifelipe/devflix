@@ -12,9 +12,11 @@ import {
   Animated,
   FlatList,
   StatusBar,
+  Alert,
 } from 'react-native';
 
 import { useNavigation } from '@react-navigation/native';
+import Feather from 'react-native-vector-icons/Feather';
 import { Profiles, ProgressBar } from '../../components';
 
 import {
@@ -25,9 +27,12 @@ import {
   icons,
   images,
 } from '../../constants';
+import { useAuth } from '../../hooks/auth';
+import { useCallback } from 'react';
 
 const Home = () => {
   const { navigate } = useNavigation();
+  const { signOut } = useAuth();
 
   const newSeasonScrollX = useRef(new Animated.Value(0)).current;
 
@@ -42,10 +47,8 @@ const Home = () => {
         </TouchableOpacity>
 
         {/* Screen Mirror */}
-        <TouchableOpacity
-          style={styles.screenMirror}
-          onPress={() => console.log('Screen mirror')}>
-          <Image source={icons.airplay} style={styles.screenMirrorImage} />
+        <TouchableOpacity style={styles.logout} onPress={handleLogout}>
+          <Feather name="log-out" size={25} color={COLORS.primary} />
         </TouchableOpacity>
       </View>
     );
@@ -238,6 +241,14 @@ const Home = () => {
     );
   }
 
+  const handleLogout = useCallback(async () => {
+    try {
+      signOut();
+    } catch (err) {
+      Alert.alert('Erro', 'Erro ao efetuar logout: ' + err);
+    }
+  }, [signOut]);
+
   return (
     <SafeAreaView style={styles.container}>
       {renderHeader()}
@@ -274,16 +285,11 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 20,
   },
-  screenMirror: {
+  logout: {
     justifyContent: 'center',
     alignItems: 'center',
     width: 50,
     height: 50,
-  },
-  screenMirrorImage: {
-    width: 25,
-    height: 25,
-    tintColor: COLORS.primary,
   },
   scrollview: {
     paddingBottom: 100,

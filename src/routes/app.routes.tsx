@@ -1,10 +1,11 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createStackNavigator } from '@react-navigation/stack';
 
 import Home from '../screens/Home';
-
 import { TabIcon } from '../components';
 import { COLORS, icons } from '../constants';
+import MovieDetail from '../screens/MovieDetail';
 
 const Tab = createBottomTabNavigator();
 
@@ -64,4 +65,20 @@ const Tabs = () => {
   );
 };
 
-export default Tabs;
+const Stack = createStackNavigator();
+
+const AppRoutes = () => {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+      initialRouteName={'SignIn'}>
+      <Stack.Screen name="Home" component={Tabs} />
+
+      <Stack.Screen name="MovieDetail" component={MovieDetail} />
+    </Stack.Navigator>
+  );
+};
+
+export default AppRoutes;
