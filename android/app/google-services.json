@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "543307906687",
+    "project_id": "devflix-178d3",
+    "storage_bucket": "devflix-178d3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:543307906687:android:45198468677d388744494a",
+        "android_client_info": {
+          "package_name": "com.devflix"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "543307906687-hp2qtdf9n4hursd1qd8bqlb8b87rfld0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAKOES2kU-84PALGd0YWdJ8WO5DQDLEZwk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "543307906687-hp2qtdf9n4hursd1qd8bqlb8b87rfld0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
