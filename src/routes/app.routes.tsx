@@ -8,6 +8,7 @@ import { COLORS, icons } from '../constants';
 import Home from '../screens/Home';
 import MovieDetail from '../screens/MovieDetail';
 import Streaming from '../screens/Streaming';
+import Search from '../screens/Search';
 
 const Tab = createBottomTabNavigator();
 
@@ -47,7 +48,7 @@ const Tabs = () => {
       />
       <Tab.Screen
         name="Search"
-        component={Home}
+        component={Search}
         options={{
           tabBarIcon: ({ focused }) => (
             <TabIcon focused={focused} icon={icons.search} />
