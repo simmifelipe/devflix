@@ -17,7 +17,7 @@ import {
 
 import { useNavigation } from '@react-navigation/native';
 import Feather from 'react-native-vector-icons/Feather';
-import { Profiles, ProgressBar } from '../../components';
+import { ProgressBar } from '../../components';
 
 import {
   dummyData,
@@ -100,24 +100,9 @@ const Home = () => {
                           color: COLORS.white,
                           ...FONTS.h3,
                         }}>
-                        Play Now
+                        Assistir
                       </Text>
                     </View>
-
-                    {/* Still Watching */}
-                    {item.stillWatching.length > 0 && (
-                      <View style={styles.stillWatching}>
-                        <Text
-                          style={{
-                            color: COLORS.white,
-                            ...FONTS.h4,
-                          }}>
-                          Still Watching
-                        </Text>
-
-                        <Profiles profiles={item.stillWatching} />
-                      </View>
-                    )}
                   </View>
                 </ImageBackground>
               </View>
@@ -178,7 +163,7 @@ const Home = () => {
         }}>
         {/* Header */}
         <View style={styles.headerWatchingSection}>
-          <Text style={styles.headerText}>Continue Watching</Text>
+          <Text style={styles.headerText}>Continue assistindo</Text>
 
           <Image source={icons.right_arrow} style={styles.headerRightAction} />
         </View>
@@ -331,9 +316,6 @@ const styles = StyleSheet.create({
     width: 15,
     height: 15,
     tintColor: COLORS.white,
-  },
-  stillWatching: {
-    justifyContent: 'center',
   },
   dots: {
     marginTop: SIZES.padding,

@@ -16,18 +16,12 @@ import {
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { ProgressBar } from '../../components';
-import { COLORS, FONTS, icons, SIZES } from '../../constants';
+import { COLORS, FONTS, icons, SIZES, videos } from '../../constants';
 
 interface Movie {
   id: number;
   name: string;
   thumbnail: any;
-  stillWatching: [
-    {
-      id: number;
-      profile: any;
-    },
-  ];
   details: {
     image: any;
     age: string;
@@ -46,7 +40,7 @@ interface ParamsProps {
 
 const MovieDetail = () => {
   const route = useRoute();
-  const { goBack } = useNavigation();
+  const { goBack, navigate } = useNavigation();
 
   const [movie, setMovie] = useState<Movie | null>(null);
 
@@ -271,6 +265,9 @@ const MovieDetail = () => {
 
         {/* Watch */}
         <TouchableOpacity
+          onPress={() =>
+            navigate('Streaming', { videoStream: videos.LaCasaDePapel4 })
+          }
           style={{
             height: 60,
             alignItems: 'center',

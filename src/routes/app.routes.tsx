@@ -2,10 +2,12 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 
-import Home from '../screens/Home';
 import { TabIcon } from '../components';
 import { COLORS, icons } from '../constants';
+
+import Home from '../screens/Home';
 import MovieDetail from '../screens/MovieDetail';
+import Streaming from '../screens/Streaming';
 
 const Tab = createBottomTabNavigator();
 
@@ -77,6 +79,7 @@ const AppRoutes = () => {
       <Stack.Screen name="Home" component={Tabs} />
 
       <Stack.Screen name="MovieDetail" component={MovieDetail} />
+      <Stack.Screen name="Streaming" component={Streaming} />
     </Stack.Navigator>
   );
 };
