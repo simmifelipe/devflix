@@ -1,6 +1,7 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React from 'react';
 import { useEffect } from 'react';
+import { useCallback } from 'react';
 import { useState } from 'react';
 import {
   View,
@@ -13,43 +14,70 @@ import {
   Platform,
   SafeAreaView,
   StatusBar,
+  Alert,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { ProgressBar } from '../../components';
 import { COLORS, FONTS, icons, SIZES, videos } from '../../constants';
-
-interface Movie {
-  id: number;
-  name: string;
-  thumbnail: any;
-  details: {
-    image: any;
-    age: string;
-    genre: string;
-    ratings: number;
-    season: string;
-    currentEpisode: string;
-    runningTime: string;
-    progress: string;
-  };
-}
+import { useAuth } from '../../hooks/auth';
+import api from '../../services/api';
 
 interface ParamsProps {
-  selectedMovie: Movie;
+  selected: Season;
 }
 
 const MovieDetail = () => {
   const route = useRoute();
   const { goBack, navigate } = useNavigation();
+  const { user } = useAuth();
 
   const [isFavorite, setIsFavorite] = useState(false);
 
-  const [movie, setMovie] = useState<Movie | null>(null);
+  const [selectedItem, setSelectedItem] = useState<Season>();
 
   useEffect(() => {
-    const { selectedMovie } = route.params as ParamsProps;
-    setMovie(selectedMovie);
-  }, [route.params]);
+    const { selected } = route.params as ParamsProps;
+    setSelectedItem(selected);
+
+    async function checkIsFavorite() {
+      if (!selectedItem) {
+        return;
+      }
+
+      const response = await api.get(
+        `/seasons/favorite/check/${user.uid}/${selectedItem.id}`,
+      );
+
+      if (response.data === true) {
+        setIsFavorite(true);
+      }
+    }
+
+    checkIsFavorite();
+  }, [route.params, selectedItem, user.uid]);
+
+  const handleFavoriteUnfavorite = useCallback(async () => {
+    try {
+      if (!selectedItem) {
+        return;
+      }
+
+      if (isFavorite) {
+        await api.delete(`/seasons/favorite/${user.uid}/${selectedItem.id}`);
+      } else {
+        await api.post('/seasons/favorite', {
+          user_id: user.uid,
+          season: { id: selectedItem.id },
+        });
+      }
+      setIsFavorite(!isFavorite);
+    } catch (err) {
+      Alert.alert(
+        'Erro',
+        'Erro ao adicionar/remover item no favoritos ' + err.message,
+      );
+    }
+  }, [isFavorite, selectedItem, user.uid]);
 
   function renderHeaderBar() {
     return (
@@ -92,7 +120,7 @@ const MovieDetail = () => {
             borderRadius: 20,
             backgroundColor: COLORS.transparentBlack,
           }}
-          onPress={() => setIsFavorite(!isFavorite)}>
+          onPress={handleFavoriteUnfavorite}>
           <Image
             source={icons.star}
             style={{
@@ -109,7 +137,7 @@ const MovieDetail = () => {
   function renderHeaderSection() {
     return (
       <ImageBackground
-        source={movie?.details.image}
+        source={{ uri: `http://172.16.1.43:3333/files/${selectedItem?.image}` }}
         resizeMode="cover"
         style={{
           width: '100%',
@@ -142,7 +170,7 @@ const MovieDetail = () => {
                   color: COLORS.white,
                   ...FONTS.body4,
                 }}>
-                {movie?.details.season}
+                {selectedItem?.season}
               </Text>
 
               {/* Name */}
@@ -152,7 +180,7 @@ const MovieDetail = () => {
                   color: COLORS.white,
                   ...FONTS.h1,
                 }}>
-                {movie?.name}
+                {selectedItem?.name}
               </Text>
             </LinearGradient>
           </View>
@@ -177,7 +205,7 @@ const MovieDetail = () => {
               color: COLORS.white,
               ...FONTS.h4,
             }}>
-            {movie?.details.age}
+            {`${selectedItem?.age}+`}
           </Text>
         </View>
 
@@ -192,7 +220,7 @@ const MovieDetail = () => {
               color: COLORS.white,
               ...FONTS.h4,
             }}>
-            {movie?.details.genre}
+            {selectedItem?.genre}
           </Text>
         </View>
 
@@ -212,7 +240,7 @@ const MovieDetail = () => {
               color: COLORS.white,
               ...FONTS.h4,
             }}>
-            {movie?.details.ratings}
+            {selectedItem?.ratings}
           </Text>
         </View>
       </View>
@@ -241,14 +269,14 @@ const MovieDetail = () => {
                 color: COLORS.white,
                 ...FONTS.h4,
               }}>
-              {movie?.details.currentEpisode}
+              {selectedItem?.current_episode}
             </Text>
             <Text
               style={{
                 color: COLORS.white,
                 ...FONTS.h4,
               }}>
-              {movie?.details.runningTime}
+              {`${selectedItem?.runningTime}m`}
             </Text>
           </View>
 
@@ -261,7 +289,7 @@ const MovieDetail = () => {
               height: 5,
               borderRadius: 3,
             }}
-            barPercentage={movie?.details.progress}
+            barPercentage={selectedItem?.progress}
           />
         </View>
 
@@ -283,9 +311,7 @@ const MovieDetail = () => {
               color: COLORS.white,
               ...FONTS.h2,
             }}>
-            {movie?.details.progress === '0%'
-              ? 'Assistir'
-              : 'Continue assistindo'}
+            {selectedItem?.progress === 0 ? 'Assistir' : 'Continue assistindo'}
           </Text>
         </TouchableOpacity>
       </View>

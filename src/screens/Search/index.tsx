@@ -17,27 +17,65 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { Input } from '../../components';
+import OrderBy from '../../components/OrderBy';
 
 import { COLORS, dummyData, FONTS, icons, SIZES } from '../../constants';
+import api from '../../services/api';
+
+type OrderByOption = {
+  value: 'ALF' | 'CLA' | 'IDA';
+};
 
 const Search: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
   const { navigate } = useNavigation();
   const [loading, setLoading] = useState(false);
 
+  const [query, setQuery] = useState('');
+  const [finded, setFinded] = useState<Season[]>([]);
+  const [orderBy, setOrderBy] = useState<OrderByOption>({ value: 'ALF' });
+
   const handleSearch = useCallback(async () => {
     setLoading(true);
+    setFinded([]);
 
-    setTimeout(() => { }, 5000);
+    const response = await api.post('/seasons/search', { query });
+    setFinded(response.data);
 
     setLoading(false);
-  }, []);
+  }, [query]);
+
+  const handleOrderBy = useCallback(
+    (order: string) => {
+      if (order === 'ALF') {
+        setOrderBy({ value: 'ALF' });
+        setFinded(
+          finded.sort((a: Season, b: Season) => (a.name < b.name ? -1 : 1)),
+        );
+      } else if (order === 'CLA') {
+        setOrderBy({ value: 'CLA' });
+        setFinded(
+          finded.sort((a: Season, b: Season) =>
+            a.ratings < b.ratings ? 1 : -1,
+          ),
+        );
+      } else if (order === 'IDA') {
+        setOrderBy({ value: 'IDA' });
+        setFinded(
+          finded.sort((a: Season, b: Season) => (a.age < b.age ? 1 : -1)),
+        );
+      }
+    },
+    [finded],
+  );
 
   function renderHeader() {
     return (
       <View style={styles.header}>
         <Form ref={formRef} onSubmit={handleSearch}>
           <Input
+            value={query}
+            onChangeText={text => setQuery(text)}
             autoCorrect={true}
             autoCapitalize="none"
             keyboardType="default"
@@ -45,9 +83,7 @@ const Search: React.FC = () => {
             icon="search"
             placeholder="Buscar"
             returnKeyType="search"
-            onSubmitEditing={() => {
-              console.log('Submit editing');
-            }}
+            onSubmitEditing={() => formRef.current?.submitForm()}
             style={styles.search}
           />
         </Form>
@@ -59,15 +95,14 @@ const Search: React.FC = () => {
     return (
       <FlatList
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{
-          paddingLeft: 20,
-        }}
-        data={dummyData.newSeason}
+        contentContainerStyle={styles.flatList}
+        data={finded}
         keyExtractor={item => `${item.id}`}
         renderItem={({ item, index }) => {
           return (
             <TouchableOpacity
-              onPress={() => navigate('MovieDetail', { selectedMovie: item })}>
+              style={styles.item}
+              onPress={() => navigate('MovieDetail', { selected: item })}>
               <View
                 // eslint-disable-next-line react-native/no-inline-styles
                 style={{
@@ -80,28 +115,63 @@ const Search: React.FC = () => {
                       : 0,
                 }}>
                 <Image
-                  source={item.thumbnail}
+                  source={{
+                    uri: `http://172.16.1.43:3333/files/${item.thumbnail}`,
+                  }}
                   resizeMode="cover"
                   style={styles.thumbnailImage}
                 />
 
                 <View style={styles.details}>
                   <Text style={styles.nameText}>{item.name}</Text>
-                  <Text style={styles.seasonText}>{item.details.season}</Text>
-                  <View style={styles.tagContainer}>
-                    <Image
-                      source={icons.star}
-                      resizeMode="contain"
-                      style={styles.image}
-                    />
-                    <Text style={styles.ratingText}>
-                      {item?.details.ratings}
-                    </Text>
+                  <Text style={styles.seasonText}>{item.season}</Text>
+                  <View style={styles.tags}>
+                    <View style={styles.tagContainer}>
+                      <Image
+                        source={icons.star}
+                        resizeMode="contain"
+                        style={styles.image}
+                      />
+                      <Text style={styles.ratingText}>{item.ratings}</Text>
+                    </View>
+                    <View style={styles.tagContainer}>
+                      <Text style={styles.ratingText}>{`${item.age}+`}</Text>
+                    </View>
                   </View>
                 </View>
               </View>
             </TouchableOpacity>
           );
+        }}
+        ListHeaderComponent={() => {
+          if (finded && finded.length > 1) {
+            return (
+              <View style={styles.headerList}>
+                <View>
+                  <Text style={styles.orderBy}>Ordenar por</Text>
+                </View>
+                <View style={styles.orderItems}>
+                  <OrderBy
+                    text="A-Z"
+                    active={orderBy.value === 'ALF'}
+                    onPress={() => handleOrderBy('ALF')}
+                  />
+                  <OrderBy
+                    text="Classificação"
+                    active={orderBy.value === 'CLA'}
+                    onPress={() => handleOrderBy('CLA')}
+                  />
+                  <OrderBy
+                    text="Idade"
+                    active={orderBy.value === 'IDA'}
+                    onPress={() => handleOrderBy('IDA')}
+                  />
+                </View>
+              </View>
+            );
+          }
+
+          return <View />;
         }}
         ListEmptyComponent={() => {
           if (loading) {
@@ -112,16 +182,8 @@ const Search: React.FC = () => {
             );
           }
           return (
-            <View
-              style={{
-                flex: 1,
-                height: 100,
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: 10,
-                backgroundColor: COLORS.gray,
-              }}>
-              <Text style={{ color: COLORS.white, ...FONTS.h4 }}>
+            <View style={styles.empty}>
+              <Text style={styles.emptyMessage}>
                 Nenhum resultado encontrado
               </Text>
             </View>
@@ -156,6 +218,26 @@ const styles = StyleSheet.create({
     width: '100%',
     color: COLORS.white,
   },
+  flatList: {
+    paddingLeft: 20,
+    paddingBottom: 100,
+  },
+  headerList: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  orderItems: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: 4,
+  },
+  item: {
+    borderWidth: 1,
+    borderColor: COLORS.gray1,
+    borderRadius: 10,
+    marginVertical: 8,
+  },
   thumbnailImage: {
     width: SIZES.width / 5,
     height: SIZES.width / 6 + 40,
@@ -184,6 +266,10 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     ...FONTS.h4,
   },
+  tags: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   image: {
     width: 12,
     height: 12,
@@ -194,6 +280,19 @@ const styles = StyleSheet.create({
     ...FONTS.h4,
   },
   loading: { flex: 1 },
+  orderBy: {
+    color: COLORS.lightGray,
+    ...FONTS.body4,
+  },
+  empty: {
+    flex: 1,
+    height: 100,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 10,
+    backgroundColor: COLORS.transparentWhite,
+  },
+  emptyMessage: { color: COLORS.white, ...FONTS.h4 },
 });
 
 export default Search;

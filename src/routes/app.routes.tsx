@@ -9,6 +9,7 @@ import Home from '../screens/Home';
 import MovieDetail from '../screens/MovieDetail';
 import Streaming from '../screens/Streaming';
 import Search from '../screens/Search';
+import Favorites from '../screens/Favorites';
 
 const Tab = createBottomTabNavigator();
 
@@ -38,8 +39,8 @@ const Tabs = () => {
         }}
       />
       <Tab.Screen
-        name="Play"
-        component={Home}
+        name="Favorites"
+        component={Favorites}
         options={{
           tabBarIcon: ({ focused }) => (
             <TabIcon focused={focused} icon={icons.star} />

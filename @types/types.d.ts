@@ -7,4 +7,13 @@ type Season = {
   age: number;
   genre: string;
   current_episode: string;
+  thumbnail: string;
+  image: string;
+  runningTime: number;
+  progress: number;
+  season: string;
+  ratings: number;
+
+  watching: boolean;
+  isNew: boolean;
 };

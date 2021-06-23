@@ -38,14 +38,21 @@ const Home = () => {
   const newSeasonScrollX = useRef(new Animated.Value(0)).current;
 
   const [seasonNews, setSeasonNews] = useState<Season[]>([]);
+  const [watching, setWatching] = useState<Season[]>([]);
 
   useEffect(() => {
-    async function loadNewsSeason() {
+    async function loadNewsSeasons() {
       const response = await api.get('/seasons/news');
       setSeasonNews(response.data);
     }
 
-    loadNewsSeason();
+    async function loadWatchingSeasons() {
+      const response = await api.get('/seasons/watching');
+      setWatching(response.data);
+    }
+
+    loadNewsSeasons();
+    loadWatchingSeasons();
   }, []);
 
   function renderHeader() {
@@ -88,11 +95,13 @@ const Home = () => {
         renderItem={({ item }) => {
           return (
             <TouchableWithoutFeedback
-              onPress={() => navigate('MovieDetail', { selectedMovie: item })}>
+              onPress={() => navigate('MovieDetail', { selected: item })}>
               <View style={styles.newSeason}>
                 {/* Thumbnail */}
                 <ImageBackground
-                  source={require('../../assets/images/series/barbarians/barbarians.jpg')}
+                  source={{
+                    uri: `http://172.16.1.43:3333/files/${item.thumbnail}`,
+                  }}
                   resizeMode="cover"
                   style={styles.newSeasonBackgroundImage}
                   imageStyle={styles.backgroundImageStyle}>
@@ -187,14 +196,12 @@ const Home = () => {
           contentContainerStyle={{
             marginTop: SIZES.padding,
           }}
-          data={dummyData.continueWatching}
+          data={watching}
           keyExtractor={item => `${item.id}`}
           renderItem={({ item, index }) => {
             return (
               <TouchableWithoutFeedback
-                onPress={() =>
-                  navigate('MovieDetail', { selectedMovie: item })
-                }>
+                onPress={() => navigate('MovieDetail', { selected: item })}>
                 <View
                   // eslint-disable-next-line react-native/no-inline-styles
                   style={{
@@ -206,7 +213,9 @@ const Home = () => {
                   }}>
                   {/* Thumbnail */}
                   <Image
-                    source={item.thumbnail}
+                    source={{
+                      uri: `http://172.16.1.43:3333/files/${item.thumbnail}`,
+                    }}
                     resizeMode="cover"
                     style={styles.thumbnailImage}
                   />
@@ -227,7 +236,7 @@ const Home = () => {
                       marginTop: SIZES.radius,
                     }}
                     barStyle={styles.barStyle}
-                    barPercentage={item.overallProgress}
+                    barPercentage={item.progress}
                   />
                 </View>
               </TouchableWithoutFeedback>

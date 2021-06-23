@@ -9,7 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import auth from '@react-native-firebase/auth';
 
 interface AuthState {
-  user: object;
+  user: any;
 }
 
 interface SignInCredentials {
@@ -24,7 +24,7 @@ interface SignUpCredentials {
 }
 
 interface AuthContextData {
-  user: object;
+  user: any;
   signIn(credentials: SignInCredentials): Promise<void>;
   signUp(credentials: SignUpCredentials): Promise<void>;
   signOut(): void;
