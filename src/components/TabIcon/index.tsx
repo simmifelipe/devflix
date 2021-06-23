@@ -1,21 +1,33 @@
 import React from 'react';
-import { View, Image } from 'react-native';
+import { View, Image, StyleSheet } from 'react-native';
 import { COLORS } from '../../constants';
 
-const TabIcon = ({ focused, icon }) => {
+type Props = {
+  focused: boolean;
+  icon: any;
+};
+
+const TabIcon = ({ focused, icon }: Props) => {
   return (
-    <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+    <View style={styles.container}>
       <Image
         source={icon}
         resizeMode="contain"
-        style={{
-          width: 25,
-          height: 25,
-          tintColor: focused ? COLORS.primary : COLORS.gray,
-        }}
+        style={[
+          styles.icon,
+          { tintColor: focused ? COLORS.primary : COLORS.gray },
+        ]}
       />
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: { alignItems: 'center', justifyContent: 'center' },
+  icon: {
+    width: 25,
+    height: 25,
+  },
+});
 
 export default TabIcon;

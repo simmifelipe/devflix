@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   SafeAreaView,
   View,
@@ -29,12 +29,24 @@ import {
 } from '../../constants';
 import { useAuth } from '../../hooks/auth';
 import { useCallback } from 'react';
+import api from '../../services/api';
 
 const Home = () => {
   const { navigate } = useNavigation();
   const { signOut } = useAuth();
 
   const newSeasonScrollX = useRef(new Animated.Value(0)).current;
+
+  const [seasonNews, setSeasonNews] = useState<Season[]>([]);
+
+  useEffect(() => {
+    async function loadNewsSeason() {
+      const response = await api.get('/seasons/news');
+      setSeasonNews(response.data);
+    }
+
+    loadNewsSeason();
+  }, []);
 
   function renderHeader() {
     return (
@@ -67,7 +79,7 @@ const Home = () => {
         contentContainerStyle={{
           marginTop: SIZES.radius,
         }}
-        data={dummyData.newSeason}
+        data={seasonNews}
         keyExtractor={item => `${item.id}`}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { x: newSeasonScrollX } } }],
@@ -80,7 +92,7 @@ const Home = () => {
               <View style={styles.newSeason}>
                 {/* Thumbnail */}
                 <ImageBackground
-                  source={item.thumbnail}
+                  source={require('../../assets/images/series/barbarians/barbarians.jpg')}
                   resizeMode="cover"
                   style={styles.newSeasonBackgroundImage}
                   imageStyle={styles.backgroundImageStyle}>
@@ -118,7 +130,7 @@ const Home = () => {
 
     return (
       <View style={styles.dots}>
-        {dummyData.newSeason.map((item, index) => {
+        {seasonNews.map((item, index) => {
           const opacity = dotPosition.interpolate({
             inputRange: [index - 1, index, index + 1],
             outputRange: [0.3, 1, 0.3],
