@@ -42,6 +42,8 @@ const MovieDetail = () => {
   const route = useRoute();
   const { goBack, navigate } = useNavigation();
 
+  const [isFavorite, setIsFavorite] = useState(false);
+
   const [movie, setMovie] = useState<Movie | null>(null);
 
   useEffect(() => {
@@ -79,7 +81,7 @@ const MovieDetail = () => {
           />
         </TouchableOpacity>
 
-        {/* Share */}
+        {/* Favorite */}
 
         <TouchableOpacity
           style={{
@@ -90,13 +92,13 @@ const MovieDetail = () => {
             borderRadius: 20,
             backgroundColor: COLORS.transparentBlack,
           }}
-          onPress={() => console.log('Share')}>
+          onPress={() => setIsFavorite(!isFavorite)}>
           <Image
-            source={icons.upload}
+            source={icons.star}
             style={{
               width: 25,
               height: 25,
-              tintColor: COLORS.white,
+              tintColor: isFavorite ? COLORS.primary : COLORS.white,
             }}
           />
         </TouchableOpacity>
@@ -281,7 +283,9 @@ const MovieDetail = () => {
               color: COLORS.white,
               ...FONTS.h2,
             }}>
-            {movie?.details.progress === '0%' ? 'WATCH NOW' : 'CONTINUE WATCH'}
+            {movie?.details.progress === '0%'
+              ? 'Assistir'
+              : 'Continue assistindo'}
           </Text>
         </TouchableOpacity>
       </View>

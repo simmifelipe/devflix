@@ -1,7 +1,7 @@
 export const newSeason = [
   {
     id: 1,
-    name: 'Barbarians',
+    name: 'Bárbaros',
     thumbnail: require('../assets/images/series/barbarians/barbarians_cover.jpg'),
     details: {
       image: require('../assets/images/series/barbarians/barbarians.jpg'),

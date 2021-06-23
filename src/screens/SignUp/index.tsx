@@ -9,55 +9,42 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { RectButton } from 'react-native-gesture-handler';
-import Feather from 'react-native-vector-icons/Feather';
 
 import { useRef } from 'react';
 import { FormHandles } from '@unform/core';
 import { Form } from '@unform/mobile';
 
-import { useAuth } from '../../hooks/auth';
 import { Input } from '../../components';
 import logoImg from '../../assets/images/logo.png';
+import { RectButton } from 'react-native-gesture-handler';
 import { COLORS, FONTS, SIZES } from '../../constants';
+import { useAuth } from '../../hooks/auth';
 
-interface SignInFormData {
+interface SignUpFormData {
+  name: string;
   email: string;
   password: string;
 }
 
-const SignIn: React.FC = () => {
-  const { navigate } = useNavigation();
+const SignUp: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
+  const emailInputRef = useRef<TextInput>(null);
   const passwordInputRef = useRef<TextInput>(null);
 
-  const { signIn } = useAuth();
+  const { signUp } = useAuth();
 
-  const handleSignIn = useCallback(
-    async (data: SignInFormData) => {
+  const handleSignUp = useCallback(
+    async (data: SignUpFormData) => {
       try {
-        await signIn({ email: data.email, password: data.password });
+        await signUp({
+          name: data.name,
+          email: data.email,
+          password: data.password,
+        });
       } catch (err) {
         console.log(err);
-        if (err.code === 'auth/invalid-email') {
-          Alert.alert('Autenticação', 'E-mail informado é inválido!');
-          return;
-        }
-        if (err.code === 'auth/user-not-found') {
-          Alert.alert(
-            'Autenticação',
-            'Este e-mail não está associado a nenhuma conta!',
-          );
-          return;
-        }
-        if (err.code === 'auth/wrong-password') {
-          Alert.alert('Autenticação', 'Senha informada está incorreta!');
-          return;
-        }
         if (err.code === 'auth/too-many-requests') {
           Alert.alert(
             'Autenticação',
@@ -65,10 +52,10 @@ const SignIn: React.FC = () => {
           );
           return;
         }
-        Alert.alert('Erro na autenticação', err.message);
+        Alert.alert('Erro na criação do usuário', err.message);
       }
     },
-    [signIn],
+    [signUp],
   );
 
   return (
@@ -83,8 +70,21 @@ const SignIn: React.FC = () => {
           <View style={styles.content}>
             <Image source={logoImg} style={styles.logo} />
 
-            <Form ref={formRef} onSubmit={handleSignIn}>
+            <Form ref={formRef} onSubmit={handleSignUp}>
               <Input
+                autoCorrect={false}
+                autoCapitalize="none"
+                keyboardType="default"
+                name="name"
+                icon="user"
+                placeholder="Nome"
+                returnKeyType="next"
+                onSubmitEditing={() => {
+                  emailInputRef.current?.focus();
+                }}
+              />
+              <Input
+                ref={emailInputRef}
                 autoCorrect={false}
                 autoCapitalize="none"
                 keyboardType="email-address"
@@ -112,22 +112,11 @@ const SignIn: React.FC = () => {
                 onPress={() => {
                   formRef.current?.submitForm();
                 }}>
-                <Text style={styles.buttonText}>Entrar</Text>
+                <Text style={styles.buttonText}>Cadastrar</Text>
               </RectButton>
             </Form>
           </View>
         </ScrollView>
-        <TouchableOpacity
-          style={styles.registerButton}
-          activeOpacity={0.7}
-          onPress={() => {
-            navigate('SignUp');
-          }}>
-          <Feather name="log-in" size={20} color={COLORS.primary} />
-          <Text style={[styles.buttonText, { marginLeft: 10 }]}>
-            Criar conta
-          </Text>
-        </TouchableOpacity>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -167,12 +156,6 @@ const styles = StyleSheet.create({
     color: COLORS.white,
     ...FONTS.h3,
   },
-  registerButton: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 22,
-  },
 });
 
-export default SignIn;
+export default SignUp;

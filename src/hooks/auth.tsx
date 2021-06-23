@@ -17,9 +17,16 @@ interface SignInCredentials {
   password: string;
 }
 
+interface SignUpCredentials {
+  name: string;
+  email: string;
+  password: string;
+}
+
 interface AuthContextData {
   user: object;
   signIn(credentials: SignInCredentials): Promise<void>;
+  signUp(credentials: SignUpCredentials): Promise<void>;
   signOut(): void;
   loading: boolean;
 }
@@ -53,6 +60,23 @@ export const AuthProvider: React.FC = ({ children }) => {
     setLoading(false);
   }, []);
 
+  const signUp = useCallback(async ({ name, email, password }) => {
+    let user: any;
+    auth()
+      .createUserWithEmailAndPassword(email, password)
+      .then(result => {
+        result.user.updateProfile({ displayName: name });
+        user = result.user;
+        console.log(user);
+
+        AsyncStorage.setItem('@NerdFlix:user', JSON.stringify(user));
+
+        setData({ user });
+        setLoading(false);
+        return user;
+      });
+  }, []);
+
   const signOut = useCallback(async () => {
     await auth().signOut();
 
@@ -62,7 +86,8 @@ export const AuthProvider: React.FC = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user: data.user, loading, signIn, signOut }}>
+    <AuthContext.Provider
+      value={{ user: data.user, loading, signIn, signUp, signOut }}>
       {children}
     </AuthContext.Provider>
   );

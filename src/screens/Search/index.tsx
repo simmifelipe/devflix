@@ -60,9 +60,9 @@ const Search: React.FC = () => {
       <FlatList
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
-          marginTop: SIZES.padding,
+          paddingLeft: 20,
         }}
-        data={[]}
+        data={dummyData.newSeason}
         keyExtractor={item => `${item.id}`}
         renderItem={({ item, index }) => {
           return (
@@ -114,12 +114,12 @@ const Search: React.FC = () => {
           return (
             <View
               style={{
-                alignItems: 'center',
+                flex: 1,
                 height: 100,
-                paddingHorizontal: SIZES.padding,
-                paddingVertical: SIZES.base,
+                alignItems: 'center',
+                justifyContent: 'center',
                 borderRadius: 10,
-                backgroundColor: COLORS.gray1,
+                backgroundColor: COLORS.gray,
               }}>
               <Text style={{ color: COLORS.white, ...FONTS.h4 }}>
                 Nenhum resultado encontrado
