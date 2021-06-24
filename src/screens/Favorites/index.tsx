@@ -1,7 +1,6 @@
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { useCallback } from 'react';
-import { useEffect } from 'react';
 import { useState } from 'react';
 import { Alert } from 'react-native';
 import { Image } from 'react-native';
@@ -19,7 +18,7 @@ import Feather from 'react-native-vector-icons/Feather';
 
 import { COLORS, FONTS, SIZES } from '../../constants';
 import { useAuth } from '../../hooks/auth';
-import api from '../../services/api';
+import api, { baseURL } from '../../services/api';
 
 type FavoriteSeason = {
   user_id: string;
@@ -56,7 +55,7 @@ const Favorites: React.FC = () => {
             {
               text: 'Não',
               style: 'cancel',
-              onPress: () => { },
+              onPress: () => {},
             },
             {
               text: 'Excluir',
@@ -109,7 +108,7 @@ const Favorites: React.FC = () => {
                 <View style={styles.contentItem}>
                   <Image
                     source={{
-                      uri: `http://172.16.1.43:3333/files/${item.season.thumbnail}`,
+                      uri: `${baseURL}/files/${item.season.thumbnail}`,
                     }}
                     resizeMode="cover"
                     style={styles.thumbnailImage}
@@ -171,7 +170,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.black,
-    paddingTop: StatusBar.currentHeight,
+    paddingTop: StatusBar.currentHeight + 30,
   },
   header: {
     height: 50,

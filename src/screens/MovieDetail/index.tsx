@@ -20,7 +20,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { ProgressBar } from '../../components';
 import { COLORS, FONTS, icons, SIZES, videos } from '../../constants';
 import { useAuth } from '../../hooks/auth';
-import api from '../../services/api';
+import api, { baseURL } from '../../services/api';
 
 interface ParamsProps {
   selected: Season;
@@ -137,7 +137,7 @@ const MovieDetail = () => {
   function renderHeaderSection() {
     return (
       <ImageBackground
-        source={{ uri: `http://172.16.1.43:3333/files/${selectedItem?.image}` }}
+        source={{ uri: `${baseURL}/files/${selectedItem?.image}` }}
         resizeMode="cover"
         style={{
           width: '100%',

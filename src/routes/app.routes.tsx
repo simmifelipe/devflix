@@ -10,6 +10,7 @@ import MovieDetail from '../screens/MovieDetail';
 import Streaming from '../screens/Streaming';
 import Search from '../screens/Search';
 import Favorites from '../screens/Favorites';
+import Admin from '../screens/Admin';
 
 const Tab = createBottomTabNavigator();
 
@@ -57,8 +58,8 @@ const Tabs = () => {
         }}
       />
       <Tab.Screen
-        name="Profile"
-        component={Home}
+        name="Admin"
+        component={Admin}
         options={{
           tabBarIcon: ({ focused }) => (
             <TabIcon focused={focused} icon={icons.profile} />

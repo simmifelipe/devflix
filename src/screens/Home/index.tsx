@@ -29,7 +29,7 @@ import {
 } from '../../constants';
 import { useAuth } from '../../hooks/auth';
 import { useCallback } from 'react';
-import api from '../../services/api';
+import api, { baseURL } from '../../services/api';
 
 const Home = () => {
   const { navigate } = useNavigation();
@@ -100,7 +100,7 @@ const Home = () => {
                 {/* Thumbnail */}
                 <ImageBackground
                   source={{
-                    uri: `http://172.16.1.43:3333/files/${item.thumbnail}`,
+                    uri: `${baseURL}/files/${item.thumbnail}`,
                   }}
                   resizeMode="cover"
                   style={styles.newSeasonBackgroundImage}
@@ -214,7 +214,7 @@ const Home = () => {
                   {/* Thumbnail */}
                   <Image
                     source={{
-                      uri: `http://172.16.1.43:3333/files/${item.thumbnail}`,
+                      uri: `${baseURL}/files/${item.thumbnail}`,
                     }}
                     resizeMode="cover"
                     style={styles.thumbnailImage}

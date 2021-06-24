@@ -20,7 +20,7 @@ import { Input } from '../../components';
 import OrderBy from '../../components/OrderBy';
 
 import { COLORS, dummyData, FONTS, icons, SIZES } from '../../constants';
-import api from '../../services/api';
+import api, { baseURL } from '../../services/api';
 
 type OrderByOption = {
   value: 'ALF' | 'CLA' | 'IDA';
@@ -116,7 +116,7 @@ const Search: React.FC = () => {
                 }}>
                 <Image
                   source={{
-                    uri: `http://172.16.1.43:3333/files/${item.thumbnail}`,
+                    uri: `${baseURL}/files/${item.thumbnail}`,
                   }}
                   resizeMode="cover"
                   style={styles.thumbnailImage}
