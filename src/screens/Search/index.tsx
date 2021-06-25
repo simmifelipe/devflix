@@ -16,10 +16,9 @@ import {
   Text,
   ActivityIndicator,
 } from 'react-native';
-import { Input } from '../../components';
-import OrderBy from '../../components/OrderBy';
+import { Input, OrderBy } from '../../components';
 
-import { COLORS, dummyData, FONTS, icons, SIZES } from '../../constants';
+import { COLORS, FONTS, icons, SIZES } from '../../constants';
 import api, { baseURL } from '../../services/api';
 
 type OrderByOption = {
@@ -108,11 +107,8 @@ const Search: React.FC = () => {
                 style={{
                   flexDirection: 'row',
                   paddingVertical: SIZES.base,
-                  marginLeft: index === 0 ? SIZES.padding : 20,
-                  marginRight:
-                    index === dummyData.continueWatching.length - 1
-                      ? SIZES.padding
-                      : 0,
+                  marginLeft: 10,
+                  marginRight: 10,
                 }}>
                 <Image
                   source={{

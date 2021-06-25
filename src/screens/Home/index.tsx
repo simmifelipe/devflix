@@ -19,14 +19,7 @@ import { useNavigation } from '@react-navigation/native';
 import Feather from 'react-native-vector-icons/Feather';
 import { ProgressBar } from '../../components';
 
-import {
-  dummyData,
-  COLORS,
-  SIZES,
-  FONTS,
-  icons,
-  images,
-} from '../../constants';
+import { COLORS, SIZES, FONTS, icons, images } from '../../constants';
 import { useAuth } from '../../hooks/auth';
 import { useCallback } from 'react';
 import api, { baseURL } from '../../services/api';
@@ -207,9 +200,7 @@ const Home = () => {
                   style={{
                     marginLeft: index === 0 ? SIZES.padding : 20,
                     marginRight:
-                      index === dummyData.continueWatching.length - 1
-                        ? SIZES.padding
-                        : 0,
+                      index === watching.length - 1 ? SIZES.padding : 0,
                   }}>
                   {/* Thumbnail */}
                   <Image
